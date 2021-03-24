@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Práctica de Campo Virtual: Tectónica</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="src/leaflet-elevation.css">
+    <link rel="stylesheet" href="src/Sidebar/L.Control.Sidebar.css" />
+    <!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.ie.css" /><![endif]-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"></script>
+        	<script type="text/javascript" src="json/geology.js"></script>
+			<script type="text/javascript" src="json/contact.js"></script>
+			<script type="text/javascript" src="json/DRAPE.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+        }
+
+        .lorem {
+            font-style: italic;
+            color: #AAA;
+        }
+
+        body > #sidebar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+         <h1>Práctica de Campo de Tectónica</h1>
+
+        <p>Sierra Gorda de Querétaro y Peña de Bernal, Querétaro</p>
+
+        <p><b>1. INTRODUCCIÓN</b></p>
+
+        <p style="text-align:justify;">
+		La geología de México es una expresión clara de la tectónica y sus consecuencias, 
+		desde las unidades más antiguas reportadas hasta los límites tectónicos actuales. 
+		En diversas regiones del país es posible apreciar la evolución cortical de distintos
+		periodos geológicos, tal es el caso de la región que comprende la Sierra Gorda de
+		Querétaro.
+		</p>
+		
+		<p style="text-align:justify;">
+		 En esta práctica de campo se visitarán regiones y afloramientos clave que han permitido
+		 conocer parte de la evolución tectónica del centro de México desde el Jurásico-Triásico
+		 hasta el Mioceno (Fitz-Díaz et al., 2018). En el recorrido se visitarán afloramientos del
+		 complejo El Chilar, Fm. San Juan de la Rosa, Fm. Peña Azul, Fm. Soyatal, Fm. Tamaulipas,
+		 Fm. Trancas y el domo riolítico de la Peña de Bernal. Cabe mencionar que dichas unidades
+		 geológicas presentan relaciones de contacto que son expresiones claras de la actividad 
+		 tectónica en distintos periodos, lo que permitirá desarrollar una dinámica de aprendizaje
+		 a partir de observar las rocas y sus estructuras en el afloramiento hasta su asociación a
+		 gran escala.
+		</p>
+		 
+		<p style="text-align:justify;">
+		 La práctica se realizará durante 3 días, del 27 al 28 de febrero de 2020, en las inmediaciones
+		 de los poblados principales de Cadereyta de Montes, San Joaquín y Bernal, Querétaro (Figura 1).
+		 El acceso al área de la práctica se logra tomando, desde Ciudad Universitaria, el periférico hasta
+		 la autopista a Querétaro y desviándose en San Juan del Río hacia Ezequiel Montes, y finalmente con
+		 desviación rumbo a Cadereyta, Qro. Asimismo, visitando por carretera, hacia el norte, los poblados
+		 de San José de la Rosa, El Jabalí y El Terrero. Posteriormente, el día siguiente el traslado es por
+		 la carretera Federal No. 120 hacia San Joaquín, visitando algunos afloramientos sobre carretera y en
+		 las inmediaciones del poblado El Doctor. Y al finalizar la práctica, la ruta de regreso será tomando
+		 la carretera Federal No. 120 de San Joaquín a Bernal y ulteriormente la autopista Querétaro en el 
+		 tramo San Juan del Río-México.
+		</p>
+		 
+			<img src="img/tectonica1.jpeg" alt="Figura 1" />
+			<p>Figura 1.</p>
+    </div>
+
+
+
+    <div id="map"></div>
+    <script src="src/Sidebar/L.Control.Sidebar.js"></script>
+    <script src="dist/leaflet.polylineDecorator.js"></script>
+
+
+    <script>
+  
+      var map = L.map('map', {
+        center: [20.83748 , -99.71396],
+        zoom: 11,
+        layers: [
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            })
+        ]
+    });
+	
+	
+		var scale = L.control.scale({
+	'imperial':false
+	});
+	
+	scale.addTo(map);
+
+	//Estilos para algunas capas, caracteristicas cartográficas, que apareceran en nuestro mapa para la capa de contactos.
+		var contact_style = {
+		fillcolor:0,
+		color: "teal",
+		weight: 2,
+		opacity: 1,
+		fillOpacity: 0
+		};
+
+//Capas Base, rásters que incluyen información topográfica general. 
+		var osm = L.tileLayer('http://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		{attribution: 'Map Data &copy; OpenStreetMap contributors'
+		});
+		
+		osm.addTo(map);
+  
+		var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+		maxZoom: 17,
+		attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+		});
+		
+		topo.addTo(map);
+	
+
+        var sidebar = L.control.sidebar('sidebar', {
+            closeButton: true,
+            position: 'left'
+        });
+        map.addControl(sidebar);
+
+        setTimeout(function () {
+            sidebar.show();
+        }, 500);
+
+        var marker = L.marker([20.86114, -99.785305]).addTo(map).on('click', function () {
+            sidebar.toggle();
+        });
+
+        var marker0 = L.marker([20.801117, -99.914268]).addTo(map).on('click', function () {
+            sidebar.setContent(
+			
+			'<h1>Modelo 3D</h1> <iframe title="A 3D model" width="400" height="480" src="https://sketchfab.com/models/55603dbe91b3435bab6ffed6a36ac534/embed?autostart=1&amp;ui_controls=1&amp;ui_infos=1&amp;ui_inspector=1&amp;ui_stop=1&amp;ui_watermark=1&amp;ui_watermark_link=1" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>'
+			)
+			.show();
+        });
+
+      var marker1 = L.marker([20.86114, -99.785305]).addTo(map).on('click', function () {
+            sidebar.setContent('<h1>Viernes 27 de marzo de 2020.</h1><h2>Primer Afloramiento</h2>Orillas del poblado El Jabalí, visita a los primeros afloramientos en arroyo (14Q 418307 mE / 2306980 mN).').show();
+        });
+		
+		var marker2 = L.marker([20.77543, -99.77069]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Viernes 27 de marzo de 2020.</h1><h2>Segundo Afloramiento</h2>Arroyo a un costado de San Juan de la Rosa, visita la segunda sección de afloramientos (14Q 419782 mE / 2297486 mN).').show();
+        });
+		
+		var marker3 = L.marker([20.89791, -99.51015]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Sábado 28 de febrero de 2020.</h1><h2>Tercer Afloramiento</h2>Pliegues de la Fm. Tamaulipas (1Q 446944 mE / 2310934 mN) <img src="img/tamaulipas.jpg" alt="Fm. Tamaulipas" /> ').show();
+        });
+		
+		var marker4 = L.marker([20.89872, -99.48312]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Sábado 28 de febrero de 2020.</h1><h2>Cuarto Afloramiento</h2>Pliegue “El Piñón” de Fm. Trancas (14Q 449755 mE / 2311015 mN) <img src="img/trancas.jpg" alt="Pliegue El Piñon" />').show();
+        });
+		
+		var marker5 = L.marker([20.85597, -99.58852]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Sábado 28 de febrero de 2020.</h1> <h2>Quinto Afloramiento</h2>poblado El Doctor, visita del 5to afloramiento (14Q 438776 mE / 2306320 mN). <img src="img/doctor.jpg" alt="Fm. El Doctor" />').show();
+        });
+		
+		var marker6 = L.marker([20.765841, -99.94882]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Domingo 29 de febrero de 2020.</h1><h2>Sexto Afloramiento</h2>Peña de Bernal costado norte, San José de la Cal. Visita de 6to afloramiento (14Q 401233 mE / 2296523 mN).').show();
+        });
+		
+		var marker7 = L.marker([20.74625, -99.94663]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Domingo 29 de febrero de 2020.</h1><h2>Séptimo Afloramiento</h2>Visita a la Peña de Bernal. Último afloramiento (14Q 401449 mE / 2294354 mN).<iframe title="Práctica de Tectónica" width="400" height="576" src="https://cesium.com/ion/stories/viewer/?id=719dcdb8-ddac-4353-bd2d-344ba36b274f" frameborder="0" allow="fullscreen" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>').show();
+        });
+
+        map.on('click', function () {
+            sidebar.hide();
+        })
+
+        sidebar.on('show', function () {
+            console.log('Sidebar will be visible.');
+        });
+
+        sidebar.on('shown', function () {
+            console.log('Sidebar is visible.');
+        });
+
+        sidebar.on('hide', function () {
+            console.log('Sidebar will be hidden.');
+        });
+
+        sidebar.on('hidden', function () {
+            console.log('Sidebar is hidden.');
+        });
+
+        L.DomEvent.on(sidebar.getCloseButton(), 'click', function () {
+            console.log('Close button clicked.');
+        });
+
+        var basemaps = {
+		"OSM": osm,
+		"Topografía": topo,										
+		};
+
+
+		L.control.layers(basemaps).addTo(map);
+
+		    var multiCoords1 = [
+        [[20.8338559371212,  -99.783853949970251],	[20.82574053079675,  -99.782157466282968],	[20.818320593237736,  -99.779545644823031],	[20.81314155274011,  -99.778232293010518],	[20.808481817965063,  -99.776737886182715],	[20.803823725591378, -99.774875972833541],	[20.793302601443912,  -99.770043621075345],	[20.788819713020807,  -99.767631637171618],	[20.78329324063424,  -99.766684789579017],	[20.775524869070892,  -99.764624085463765],	[20.76689556449557,  -99.761824239652626]],
+        [[20.867870162510108, -99.791201625464197],	[20.855965360829753, -99.786726493298502],	[20.833188926236605, -99.778519103552085],	[20.830256670739789, -99.777217167360021],	[20.821613534943889, -99.777540483794809],	[20.809379930561505, -99.769206171841532],	[20.80300165901139, -99.765497722786449],	[20.797477640089198,  -99.763999462965742],	[20.794205295532084 , -99.761409864698393],	[20.78989185728167, -99.759734121719774],	[20.785578397582416, -99.758058477695528],	[20.778493947164822, -99.757655561808875],	[20.774360559031098, -99.754327073020818],	[20.763308207341005, -99.752250880231927]],
+		[[20.830892658828738, -99.689161116933349],	[20.821871268808312, -99.675976202112139],	[20.816726181959826, -99.665750991050828],	[20.781516435932566, -99.629850802910838],	[20.766530998131127 , -99.615638766280156],	[20.757733377208588 , -99.610825516618675]],
+        [[20.922905438137718,  -99.694547644033904],[20.919452189078825,  -99.69370396418266],	[20.903983824104571, -99.693632822757664],	[20.891869554754088, -99.697531329708582],	[20.886076331546416, -99.698332156208124],	[20.881483509458217, -99.70143726387974],	[20.877853298947446, -99.701604307494037],	[20.876636305892198, -99.703345672878939],	[20.871451366973577, -99.703321541981254],	[20.865567153748813, -99.705224936373739],	[20.861523363299089, -99.700884942320172],	[20.855734253957657, -99.700674244565818],	[20.851751211891369, -99.702586392558814],	[20.84742853018107, -99.703025974399566],	[20.846406593615818, -99.699344032598077],	[20.840712501834332, -99.697019563855918],	[20.825326307775871, -99.697959843559488]],
+		[[20.964099489497354, -99.721786128913408],	[20.951651913119001, -99.722646354964013],	[20.947683073555574, -99.721155441133135],	[20.944052883194768, -99.72132203091941],	[20.937847314409773, -99.717428925237996],	[20.93266860756529, -99.715932546841699],	[20.928876366608094, -99.713523050996386],	[20.90852361058932, -99.703494240260156]],
+        [[20.977579972094702, -99.799322381653965], [20.953805980370728, -99.782821121992981],	[20.943460773996556, -99.777432034176684],	[20.931912219661911, -99.770565846913144],	[20.922261980034357, -99.76426220294907]],
+		[[20.93635314629552, -99.982698384443509], [20.932413707495396, -99.976510204208566],	[20.926921799756602, -99.969760502241158]],
+        [[20.825038375574973, -99.985375264199732],	[20.809548632987916, -99.974062454250742],	[20.800287840641602, -99.961321166665428]],
+		[[20.828841464606715, -99.985216173545453],[20.842023695837856,  -99.946142936781811]],
+        [[20.687391347517526, -99.472055159111477],[20.674112786767378, -99.460811013871648]],
+        [[20.894338599223786, -99.747200439128122], [20.879002249621269, -99.736642370772216]]
+    ];
+	
+
+    var plArray = [];
+    for(var i=0; i<multiCoords1.length; i++) {
+        plArray.push(L.polyline(multiCoords1[i], {color:'black'}).addTo(map));
+    }
+
+    L.polylineDecorator(multiCoords1, {
+         patterns: [
+                { offset: 0, repeat: 500, symbol: L.Symbol.dash({pixelSize: 1, pathOptions: {weight: 0.1, opacity: 0.2}}) },
+                { offset: '5%', repeat: '15%', symbol: L.Symbol.marker({rotate: true, angleCorrection: -90, markerOptions: {
+                    icon: L.icon({
+                        iconUrl: 'Icon/linea.svg',
+                        iconAnchor: [1, 1]
+                    })
+                }})}
+            ]
+        }
+    ).addTo(map);
+
+
+
+		 var multiCoords2 = [
+        [[20.9979327931889,-99.6000139878785],	[20.995125908942,-99.5973788300614],	[20.9926801382518,-99.5921213000854],	[20.9891781559809,-99.5868598122289],	[20.9825433691589,-99.5710915219616],	[20.9771064880642,-99.5652613786698],	[20.9718373894012,-99.561868434331],	[20.9644597883832,-99.5573435787267],	[20.9577915461491,-99.551135368615],	[20.9514738818929,-99.5453037232891],	[20.946213245972,-99.5391016275808],	[20.941656997154,-99.5327150983204],	[20.9327077317127,-99.5238780761574],	[20.9234002947527,-99.5169142540373],	[20.9184810341336,-99.5139000917154],	[20.9121631170992,-99.5076968958923],	[20.9047938286957,-99.4998048984395],	[20.8946186983336,-99.4881584922272],	[20.8839172999649,-99.4755755515579],	[20.8698797619327,-99.459613281919]],
+        [[20.9864505473319,-99.6589094410503],	[20.965930372662,-99.6397997515034],	[20.944185005223,-99.6181608891656],	[20.92375936327,-99.5957841801346],	[20.9030675234594,-99.5731315657956],	[20.8778133000405,-99.5451310748095],	[20.8653165178023,-99.5310879847788],	[20.861678304098,-99.5265341469533],	[20.8558562815996,-99.5165426492398],	[20.853012656299,-99.5110090709012],	[20.841253635469,-99.4995011971166],	[20.8315334522226,-99.482525388088],	[20.8193283852707,-99.4724708431212],	[20.8070364380099,-99.461762483872],	[20.7999248478671,-99.4553765340919]],
+        [[20.8314622682952,-99.7674744271168],	[20.8059873822925,-99.7570502711957],	[20.7961483888293,-99.7530705406783],	[20.787547843637,-99.7476001559792]],
+        [[20.9665414720772,-99.8950189979251],	[20.9605811649254,-99.8904866045337],	[20.9565625159209,-99.8848418044195],	[20.9432619402968,-99.8701502421823],	[20.9365969062155,-99.8656154995197],	[20.9169520294459,-99.8522030231164],	[20.9018681111074,-99.8416289706003],	[20.8993285514064,-99.8390862880226],	[20.8948511192185,-99.8369075365438],	[20.8883478237276,-99.835092288143],	[20.8753452381665,-99.8306196053116],	[20.8665583670523,-99.8278560846098],	[20.8598942603818,-99.8228574908645],	[20.846542822916,-99.8176359661313],	[20.8322351269267,-99.8098828611938],	[20.8203704090243,-99.8065434189375],	[20.8009593001032,-99.7984851358953],	[20.7850617475465,-99.791757391533]]
+    ];
+    var plArray = [];
+    for(var i=0; i<multiCoords2.length; i++) {
+        plArray.push(L.polyline(multiCoords2[i], {color:'black'}).addTo(map));
+    }
+
+    L.polylineDecorator(multiCoords2, {
+         patterns: [
+                { offset: 10, repeat: 5, symbol: L.Symbol.dash({pixelSize: 1, pathOptions: {weight: 0.1, opacity: 0.2}}) },
+                { offset: '5%', repeat: '45%', symbol: L.Symbol.marker({rotate: true, angleCorrection: -90, markerOptions: {
+                    icon: L.icon({
+                        iconUrl: 'Icon/AntRecumbente.svg',
+                        iconAnchor: [15, 15]
+                    })
+                }})}
+            ]
+        }
+    ).addTo(map);
+
+
+  		var multiCoords3 = [
+		[[20.9978049418128,-99.7003228374996],	[20.9877193046636,-99.6942027445632],	[20.9821146945266,-99.6911404282607],	[20.9752078454662,-99.6895445221962],	[20.9715943795475,-99.6855716735424],	[20.9684904610071,-99.6838094354225],	[20.9649529728379,-99.682413315103],	[20.9597695367688,-99.6820218036539],	[20.9553795979525,-99.6776780653004],	[20.9475132433465,-99.678286590745],	[20.9431957631173,-99.6774392377964],	[20.9374378663327,-99.6693185942371],	[20.9332038602637,-99.6692077988197],	[20.9159276866128,-99.6448502737172],	[20.9114343865715,-99.6447390908849],	[20.9076514238323,-99.6395727152819],	[20.8923034340342,-99.6303118043789],	[20.8854140292229,-99.6237542698938],	[20.8744673863062,-99.6158934914468],	[20.8700788924928,-99.6106347166651],	[20.8666343041831,-99.6072188958301],	[20.858094573549,-99.6027715674486],	[20.8509470044066,-99.5955722354143],	[20.8446569636889,-99.590215525579],	[20.8426725171896,-99.5892884967099],	[20.8412914109637,-99.5888234790139],	[20.8403452323207,-99.5875328108865],	[20.8384449823669,-99.587249657033],	[20.8367166223962,-99.5872429538009],	[20.8353364529609,-99.5865022039523],	[20.8344760446925,-99.5853957815181],	[20.834219614892,-99.5845674739692],	[20.8334471760156,-99.5830017915367],	[20.8331036915667,-99.5823570055988],	[20.8317210015456,-99.5823516891256],	[20.8306858571355,-99.5817961776994],	[20.8301720234466,-99.5804153797056],	[20.8297442859943,-99.5791268413732],	[20.8288816563151,-99.5786639391229],	[20.826807929114,-99.5785640984708],	[20.8252564296809,-99.5773632309075],	[20.8248283589218,-99.5761666600335],	[20.8244033602761,-99.5740509253622],	[20.8228512128643,-99.573033955133],	[20.8189672942569,-99.5715486305202],	[20.8171528134491,-99.5714498746294],	[20.8161185467795,-99.570618756568],	[20.8154320863022,-99.569145567452],	[20.8150918953481,-99.5674898628478],	[20.814491219062,-99.5662008422764],	[20.8133692944591,-99.5657370941282],	[20.8111248351242,-99.5649934372532],	[20.8096587438038,-99.5640688806846],	[20.8094904348798,-99.5626896151763],	[20.8056940325654,-99.5608373891848],	[20.8047473284098,-99.5596391046617],	[20.8044055468461,-99.5584430621746],	[20.8031959831222,-99.5583467035358],	[20.8021610500931,-99.5576995598157],	[20.8013031245499,-99.5557664131908],	[20.8005336708876,-99.5531902831686],	[20.7991571797829,-99.5512552977738],	[20.7975164005189,-99.550881727864],	[20.7957906743997,-99.550048352561],	[20.794756295505,-99.5492174985875],	[20.7946748691162,-99.5476548955135],	[20.7935540589521,-99.5468237524914],	[20.7918265559231,-99.5465418321832],	[20.7908806216617,-99.5450680544901],	[20.7899338009317,-99.5438699848999],	[20.7871710066082,-99.5430330228521],	[20.7845772682025,-99.5433913238929],	[20.7826760458509,-99.543384520318],	[20.7812974047602,-99.5420930928507],	[20.7792247925238,-99.5416262389093],	[20.7778435325709,-99.5411618614759],	[20.7768099720974,-99.5400555020091],	[20.7755180108433,-99.5386725738454],	[20.7729254300452,-99.5386633813744],	[20.7718022662429,-99.538567512667],	[20.7679205785868,-99.5362566446135],	[20.7664537404059,-99.5355164004238],	[20.7647276399468,-99.534775258638],	[20.7638620143726,-99.535231623199],	[20.7626469817388,-99.5368812076589],	[20.7618669081207,-99.5376134988516],	[20.7603087681228,-99.5384349072225],	[20.7583216949094,-99.5382441130856],	[20.757023098548,-99.5389745389522],	[20.7558979151118,-99.5395218137323],	[20.7550273634384,-99.5415400104037],	[20.7543351387367,-99.5418131739595],	[20.7532963661059,-99.5423607265087],	[20.7521711722509,-99.5429079632414],	[20.7508737184004,-99.5432708284794],	[20.7500927461037,-99.5442786486354],	[20.7501762545453,-99.5451976836449],	[20.7500007913823,-99.5460239163126],	[20.746643508954,-99.5418776491484],	[20.7465829483654,-99.5336089957019],	[20.7455524560623,-99.531492349361],	[20.7447797815665,-99.5298359809567],	[20.7445244803957,-99.5285489065966],	[20.7447902217174,-99.5264368067354],	[20.7458320341502,-99.5248786006873],	[20.746702669912,-99.522768553781],	[20.746879693992,-99.5213910837691],	[20.7461058103455,-99.5201022316697],	[20.7458493270504,-99.5191826420183],	[20.7458512676216,-99.5185395495449],	[20.7459396257227,-99.5178967511592],	[20.7462900025229,-99.5163361268926],	[20.7467248586919,-99.5154188840786],	[20.7472477786189,-99.5139507006036],	[20.747254081863,-99.5118376610331],	[20.7463950689886,-99.5100892085889],	[20.745448802753,-99.5086160976408],	[20.7445027943355,-99.5070511351494],	[20.7432972407149,-99.505577199701],	[20.7420940954615,-99.5032764728081],	[20.7406316578693,-99.5009749283816],	[20.7383041864164,-99.4989461947004],	[20.7362354192239,-99.4971020993586],	[20.7345115185168,-99.4955347703955],	[20.7334768537621,-99.4947046259899],	[20.7304639762735,-99.4905610340186],	[20.7277958975593,-99.4866942889263],	[20.7223576221949,-99.4844723331239],	[20.7202002055398,-99.4833631982192]],
+		[[20.9978790061772,-99.6601553151496],	[20.9947985713421,-99.6634085173545],	[20.9944117189095,-99.6738971621042]],
+		[[20.9920371269553,-99.6734264114122],	[20.9917593024376,-99.6671678738541],	[20.9894470948731,-99.6617745704247],	[20.9896379176138,-99.6571285097077],	[20.9862811726162,-99.6536172242146],	[20.9834902606095,-99.6490043734771],	[20.9783957706276,-99.6479242448562],	[20.9780612786974,-99.6449784529347],	[20.972504642276,-99.640400236762],	[20.9721743143293,-99.636304498559],	[20.9684723007501,-99.6325626209473],	[20.9687878649267,-99.6290217377479],	[20.9676273518103,-99.6273607971999],	[20.9635666431427,-99.627113853433],	[20.9616835212404,-99.6221839383676],	[20.9580565567092,-99.6214789462792],	[20.9537871498493,-99.6192074011224],	[20.9473976759749,-99.6177092358867],	[20.942362700817,-99.6120312241394],	[20.945485379974,-99.6087782192388],	[20.9439472076583,-99.6038964983231],	[20.943747706541,-99.59920418079],	[20.9374187188545,-99.5926939342505],	[20.9375189853397,-99.5886929000303],	[20.9339046425165,-99.5842635091134],	[20.9330577135169,-99.5792010906456],	[20.9298259433461,-99.5765671711003],	[20.9300099295087,-99.5732565059646],	[20.9260965349368,-99.567676821118]]     
+	];
+	
+
+    var plArray = [];
+    for(var i=0; i<multiCoords3.length; i++) {
+        plArray.push(L.polyline(multiCoords3[i], {color:'black'}).addTo(map));
+    }
+
+    L.polylineDecorator(multiCoords3, {
+         patterns: [
+                { offset: 50, repeat: 20, symbol: L.Symbol.dash({pixelSize: 1, pathOptions: {weight: 0.1, opacity: 0.2}}) },
+                { offset: '10%', repeat: '15%', symbol: L.Symbol.marker({rotate: true, angleCorrection: -45, markerOptions: {
+                    icon: L.icon({
+                        iconUrl: 'Icon/triangulo.svg',
+                        iconAnchor: [15, 15]
+                    })
+                }})}
+            ]
+        }
+    ).addTo(map);
+
+    var multiCoords4 = [
+		[[20.9980721486169,-99.5173114610098],	[20.9799685631967,-99.5088157814694],	[20.974168602908,-99.5059851421384],	[20.9652130665448,-99.4988342117296],	[20.9543361282126,-99.486431329963],	[20.9444189948992,-99.4766563599679],	[20.9370421128288,-99.4710123649253],	[20.9287920960548,-99.4627434027415],	[20.9201853839505,-99.4560666148129],	[20.9157940392742,-99.4526814124751],	[20.9103487590964,-99.4484503193948],	[20.904378486442,-99.4430004414463]],
+		[[20.9978932129367,-99.7538434812395],	[20.9901628144949,-99.7507123498077],	[20.9811040950192,-99.7494489706882],	[20.9753083741254,-99.7466091405669],	[20.9703905614771,-99.7442423517507],	[20.9628395955698,-99.740270004059],	[20.9549361085218,-99.73639002574],	[20.9424584416474,-99.7320198254063],	[20.93665755648,-99.7303055002635],	[20.9292750113502,-99.7280216501575],	[20.9195183592092,-99.7252582893535],	[20.9092332319155,-99.7225864316981],	[20.9037830314824,-99.7211555236466],	[20.8930589735502,-99.7182012281489],	[20.868237543407,-99.7192068143319]],
+		];
+	
+
+    var plArray = [];
+    for(var i=0; i<multiCoords4.length; i++) {
+        plArray.push(L.polyline(multiCoords4[i], {color:'black'}).addTo(map));
+    }
+
+    L.polylineDecorator(multiCoords4, {
+         patterns: [
+                { offset: 0, repeat: 20, symbol: L.Symbol.dash({pixelSize: 1, pathOptions: {weight: 0.1, opacity: 0.2}}) },
+                { offset: '10%', repeat: '80%', symbol: L.Symbol.marker({rotate: true, angleCorrection: -90, markerOptions: {
+                    icon: L.icon({
+                        iconUrl: 'Icon/SinclinalR.svg',
+                        iconAnchor: [15, 15]
+                    })
+                }})}
+            ]
+        }
+    ).addTo(map);
+	
+
+	//Capas GeoJSON, archivos vectoriales con información geológica de inte´res en formato json.
+	//Capa Vectoríal con la Geología de la zona. 
+		var geology = L.geoJson(geology, {//Utilizamos la funcion "switch" para categorizar cada litología. 
+			style:function(feature){
+			switch (feature.properties.CLAVE){
+				case 'Qhoal': return {color:'#fff5dd',fillOpacity: .5};//Colores en HTML
+				case 'Qhoco': return {color:'#f7ece1',fillOpacity: .5};			
+				case 'TplQptB': return {color:'#bf9487',fillOpacity: .5};
+				case 'TplQptCgp-Ar': return {color:'#eedfb3',fillOpacity: .5};
+				case 'TeGd-D': return {color:'#ed1c24',fillOpacity: .5};
+				case 'TeoCgp': return {color:'#d8e9b9',fillOpacity: .5}; 
+				case 'TmplA-B': return {color:'#fbc9bc',fillOpacity: .5};
+				case 'TplA-Da': return {color:'#e4c19b',fillOpacity: .5};
+				case 'TplR-TR': return {color:'#f9b6ac',fillOpacity: .5};
+				case 'TplTR-TDa': return {color:'#f7b9d4',fillOpacity: .5};
+				case 'ToR-TR': return {color:'#e1a49c',fillOpacity: .5};
+				case 'KapceCz-Bro': return {color:'#00ac4e',fillOpacity: .5};	
+				case 'KiCz-Lu': return {color:'#5f7641',fillOpacity: .5};
+				case 'KsLu-Cz': return {color:'#698c42',fillOpacity: .5};
+				case 'JtKvLu-Cz': return {color:'#76cdd6',fillOpacity: .5};				
+			}},
+			onEachFeature: function( feature, layer ){
+      		layer.bindPopup( "<strong>" + "LITOLOGÍA:" + "</strong><br/>"+ feature.properties.LITOLOGIA)
+			//PopUp (Letrero) que se muestra al dar click en cada área de una litología particular y 
+			//despliega la información que decidamos colocar según nuestra tabla de atributos. 
+		}
+		}).addTo(map);
+		
+	//Capa Vectorial con los Contactos entre litologías
+		var contact = L.geoJson(contact,{
+		style: contact_style,
+		onEachFeature: function( feature, layer ){
+		layer.bindPopup( "")}
+		}).addTo (map);
+
+
+		  
+
+
+
+    </script>
+</body>
+</html>|
+
+
+
+
+
+
+
+
+	
+
+
+
+
